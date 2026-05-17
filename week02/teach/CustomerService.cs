@@ -11,24 +11,60 @@ public class CustomerService {
         // Test Cases
 
         // Test 1
-        // Scenario: 
-        // Expected Result: 
+        // Scenario: Add one customer and then serve them
+        // Expected Result: The customer that was added should be displayed
         Console.WriteLine("Test 1");
-
-        // Defect(s) Found: 
+        var cs = new CustomerService(5);
+        cs.AddNewCustomer();
+        cs.ServeCustomer();
+        // Defect(s) Found: ServeCustomer was removing the customer before reading it
 
         Console.WriteLine("=================");
 
         // Test 2
-        // Scenario: 
-        // Expected Result: 
+        // Scenario: Add two customers and serve them both
+        // Expected Result: Customers should be served in the order they were added
         Console.WriteLine("Test 2");
-
-        // Defect(s) Found: 
+        cs = new CustomerService(5);
+        cs.AddNewCustomer();
+        cs.AddNewCustomer();
+        cs.ServeCustomer();
+        cs.ServeCustomer();
+        // Defect(s) Found: None once defect from Test 1 was fixed
 
         Console.WriteLine("=================");
 
-        // Add more Test Cases As Needed Below
+        // Test 3
+        // Scenario: Try to serve a customer from an empty queue
+        // Expected Result: An error message should be displayed
+        Console.WriteLine("Test 3");
+        cs = new CustomerService(5);
+        cs.ServeCustomer();
+        // Defect(s) Found: No check for empty queue, it crashed instead of showing an error
+
+        Console.WriteLine("=================");
+
+        // Test 4
+        // Scenario: Fill the queue to max size and try to add one more
+        // Expected Result: Error message should display when trying to add the extra customer
+        Console.WriteLine("Test 4");
+        cs = new CustomerService(3);
+        cs.AddNewCustomer();
+        cs.AddNewCustomer();
+        cs.AddNewCustomer();
+        cs.AddNewCustomer();
+        Console.WriteLine(cs);
+        // Defect(s) Found: Used > instead of >= so one extra customer could be added
+
+        Console.WriteLine("=================");
+
+        // Test 5
+        // Scenario: Create a queue with an invalid max size of 0
+        // Expected Result: Max size should default to 10
+        Console.WriteLine("Test 5");
+        cs = new CustomerService(0);
+        Console.WriteLine(cs);
+        // Defect(s) Found: None, the default logic was already correct
     }
 
     private readonly List<Customer> _queue = new();
@@ -67,7 +103,7 @@ public class CustomerService {
     /// </summary>
     private void AddNewCustomer() {
         // Verify there is room in the service queue
-        if (_queue.Count > _maxSize) {
+        if (_queue.Count >= _maxSize) {
             Console.WriteLine("Maximum Number of Customers in Queue.");
             return;
         }
@@ -88,8 +124,13 @@ public class CustomerService {
     /// Dequeue the next customer and display the information.
     /// </summary>
     private void ServeCustomer() {
-        _queue.RemoveAt(0);
+        if (_queue.Count <= 0) {
+            Console.WriteLine("No customers in the queue.");
+            return;
+        }
+
         var customer = _queue[0];
+        _queue.RemoveAt(0);
         Console.WriteLine(customer);
     }
 
